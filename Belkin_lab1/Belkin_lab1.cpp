@@ -24,11 +24,38 @@ void AddPipe(vector<Pipe>& pipes)
     Pipe newPipe;
     cout << "Input name pipe: ";
     cin >> newPipe.name;
+
     cout << "Input length pipe: ";
-    cin >> newPipe.length;
+    while (!(cin >> newPipe.length) || newPipe.length <= 0) {
+        cout << "Error! Input type: float. And > 0\nInput positive number: ";
+        cin.clear();
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    };
+
     cout << "Input diametr pipe: ";
-    cin >> newPipe.diametr;
-    newPipe.repair = false;
+    while (!(cin >> newPipe.diametr) || newPipe.diametr <= 0) {
+        cout << "Error! Input type: int. And > 0\nInput positive number: ";
+        cin.clear();
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    };
+    
+    string status;
+    cout << "Is the pipe being repaired?(Yes/No): ";
+    while (true) {
+        cin >> status;
+        if (status == "Yes") {
+            newPipe.repair = true;
+            break;
+        }
+        else if (status == "No") {
+            newPipe.repair = false;
+            break;
+        }
+        else {
+            cout << "Error! Input 'Yes' or 'No'";
+        };
+    };
+
     pipes.push_back(newPipe);
     cout << "New pipe add\n";
 };
@@ -51,7 +78,7 @@ void AddCS(vector<CS>& cs_list)
 void ViewAllObjects(const vector<Pipe>& pipes, const vector<CS>& cs_list)
 {
     if (pipes.empty()) {
-        cout << "Pipes empty";
+        cout << "Pipes empty\n";
     }
     else {
 
@@ -65,7 +92,7 @@ void ViewAllObjects(const vector<Pipe>& pipes, const vector<CS>& cs_list)
             if (pipes[i].repair == false) {
                 cout << "repair: No\n";
             }
-            else {
+            else if (pipes[i].repair == true){
                 cout << "repair: Yes\n";
             };
             cout << "--------------------------------------\n";
@@ -73,7 +100,7 @@ void ViewAllObjects(const vector<Pipe>& pipes, const vector<CS>& cs_list)
     };
 
     if (cs_list.empty()) {
-        cout << "CS empty";
+        cout << "CS empty\n";
     }
     else {
 
@@ -93,7 +120,7 @@ void ViewAllObjects(const vector<Pipe>& pipes, const vector<CS>& cs_list)
 void Menu(vector<Pipe>& pipes, vector<CS>& cs_list)
 {
     while (1) {
-        cout << "Choose option:\n1. Add pipe\n2. Add CS\n3. View all objects\n4. Edit pipe\n5. Edit Cs\n6. Save\n7. Upload\n0. Exit\n";
+        cout << "Choose option:\n1. Add Pipe\n2. Add CS\n3. View all objects\n4. Edit pipe\n5. Edit CS\n6. Save\n7. Upload\n0. Exit\n";
         int option;
         cin >> option;
         switch (option)
