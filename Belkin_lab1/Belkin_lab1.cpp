@@ -1,6 +1,7 @@
 ﻿#include <iostream>
 #include <string>
 #include <vector>
+#include <limits>
 using namespace std;
 
 struct Pipe
@@ -52,7 +53,7 @@ void AddPipe(vector<Pipe>& pipes)
             break;
         }
         else {
-            cout << "Error! Input 'Yes' or 'No'";
+            cout << "Error! Input 'Yes' or 'No'\n";
         };
     };
 
@@ -129,12 +130,50 @@ void ViewAllObjects(const vector<Pipe>& pipes, const vector<CS>& cs_list)
     };
 };
 
+void EditPipe(vector<Pipe>& pipes)
+{   
+    if (pipes.empty()) {
+        cout << "\nPipes empty\n";
+        return;
+    }
+
+    int i;
+    cout << "\nInput pipe number: ";
+    while (!(cin >> i) || i <= 0 ||  i > pipes.size()) {
+        cout << "Error! Input type: int. And > 0. And < size pipes\nInput positive number: ";
+        cin.clear();
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    };
+
+    string status;
+    cout << "Is the pipe being repaired?(Yes/No): ";
+    while (true) {
+        cin >> status;
+        if (status == "Yes") {
+            pipes[i - 1].repair = true;
+            break;
+        }
+        else if (status == "No") {
+            pipes[i - 1].repair = false;
+            break;
+        }
+        else {
+            cout << "Error! Input 'Yes' or 'No'\n";
+        };
+    };
+};
+
 void Menu(vector<Pipe>& pipes, vector<CS>& cs_list)
 {
     while (1) {
-        cout << "Choose option:\n1. Add Pipe\n2. Add CS\n3. View all objects\n4. Edit pipe\n5. Edit CS\n6. Save\n7. Upload\n0. Exit\n";
+        cout << "\nChoose option:\n1. Add Pipe\n2. Add CS\n3. View all objects\n4. Edit pipe\n5. Edit CS\n6. Save\n7. Upload\n0. Exit\n";
         int option;
-        cin >> option;
+
+        while (!(cin >> option)) {
+            cout << "Error type.\nInput positive number: ";
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        };
         switch (option)
         {
         case 1:
@@ -146,9 +185,15 @@ void Menu(vector<Pipe>& pipes, vector<CS>& cs_list)
         case 3:
             ViewAllObjects(pipes, cs_list);
             break;
+        case 4:
+            EditPipe(pipes);
+            break;
         case 0:
             cout << "Exiting...\n";
             return;
+        default:
+            cout << "Invalid option! Try again.\n";
+            break;
         };
     };
 };
