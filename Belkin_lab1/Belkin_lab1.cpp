@@ -163,6 +163,61 @@ void EditPipe(vector<Pipe>& pipes)
     };
 };
 
+void EditCS(vector<CS>& cs_list)
+{
+    if (cs_list.empty()) {
+        cout << "\nCS empty\n";
+        return;
+    };
+
+    int i;
+    cout << "\nInput CS number: ";
+    while (!(cin >> i) || i <= 0 || i > cs_list.size()) {
+        cout << "Error! Input type: int. And > 0. And < size cs_list\nInput positive number: ";
+        cin.clear();
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    };
+
+    while (1) {
+        cout << "CS " << i << endl;
+        cout << "works: " << cs_list[i - 1].k_cex_in_work << "/" << cs_list[i - 1].k_cex << endl;
+        cout << "\nChoose option:\n1. Run workshop +1\n2. Stop workshop -1\n3. Exit\n";
+        int option;
+
+        while (!(cin >> option)) {
+            cout << "Error type.\nInput positive number: ";
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        };
+
+        switch (option)
+        {
+        case 1:
+            if ((cs_list[i - 1].k_cex_in_work + 1) <= cs_list[i - 1].k_cex) {
+                cs_list[i - 1].k_cex_in_work++;
+            }
+            else {
+                cout << "The number of workshop workers cannot be greater than the total number of workshops.\n";
+            };
+            break;
+        case 2:
+            if ((cs_list[i - 1].k_cex_in_work - 1) >= 0) {
+                cs_list[i - 1].k_cex_in_work--;
+            }
+            else {
+                cout << "The number of workshop workers cannot be less than zero.\n";
+            };
+            break;
+        case 3:
+            return;
+        default:
+            cout << "Invalid option! Try again.\n";
+            break;
+        };
+    };
+
+};
+
 void Menu(vector<Pipe>& pipes, vector<CS>& cs_list)
 {
     while (1) {
@@ -187,6 +242,9 @@ void Menu(vector<Pipe>& pipes, vector<CS>& cs_list)
             break;
         case 4:
             EditPipe(pipes);
+            break;
+        case 5:
+            EditCS(cs_list);
             break;
         case 0:
             cout << "Exiting...\n";
