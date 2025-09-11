@@ -22,7 +22,7 @@ struct CS
 void AddPipe(vector<Pipe>& pipes)
 {
     Pipe newPipe;
-    cout << "Input name pipe: ";
+    cout << "\nInput name pipe: ";
     cin >> newPipe.name;
 
     cout << "Input length pipe: ";
@@ -57,28 +57,40 @@ void AddPipe(vector<Pipe>& pipes)
     };
 
     pipes.push_back(newPipe);
-    cout << "New pipe add\n";
+    cout << "New pipe add\n\n";
 };
 
 void AddCS(vector<CS>& cs_list)
 {
     CS newCS;
-    cout << "Input name CS: ";
+    cout << "\nInput name CS: ";
     cin >> newCS.name;
+
     cout << "Input number of workshop: ";
-    cin >> newCS.k_cex;
+    while (!(cin >> newCS.k_cex) || newCS.k_cex <= 0) {
+        cout << "Error! Input type: int. And > 0\nInput positive number: ";
+        cin.clear();
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    };
+
     cout << "Input number of workshop in work: ";
-    cin >> newCS.k_cex_in_work;
+    while (!(cin >> newCS.k_cex_in_work) || newCS.k_cex_in_work < 0 || newCS.k_cex_in_work > newCS.k_cex) {
+        cout << "Error! Input type: int. And > 0. And < workshop\nInput positive number: ";
+        cin.clear();
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    };
+
     cout << "Input type CS: ";
     cin >> newCS.type;
+
     cs_list.push_back(newCS);
-    cout << "New CS add\n";
+    cout << "New CS add\n\n";
 };
 
 void ViewAllObjects(const vector<Pipe>& pipes, const vector<CS>& cs_list)
 {
     if (pipes.empty()) {
-        cout << "Pipes empty\n";
+        cout << "\nPipes empty\n";
     }
     else {
 
