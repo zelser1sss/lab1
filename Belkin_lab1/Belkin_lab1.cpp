@@ -2,6 +2,7 @@
 #include <string>
 #include <vector>
 #include <limits>
+#include <fstream>
 using namespace std;
 
 struct Pipe
@@ -215,7 +216,113 @@ void EditCS(vector<CS>& cs_list)
             break;
         };
     };
+};
 
+void Save(const vector<Pipe>& pipes, const vector<CS>& cs_list)
+{
+    if (!(pipes.empty())) {
+        ofstream pipes_save;
+        pipes_save.open("pipes.txt");
+        if (pipes_save.is_open())
+        {
+            for (size_t i = 0; i < pipes.size(); i++) {
+                pipes_save << pipes[i].name << "|" << pipes[i].length << "|" << pipes[i].diametr << "|" << pipes[i].repair << "|" << endl;
+            };
+        };
+        pipes_save.close();
+    }
+    else {
+        cout << "\nPipes empty\n";
+    };
+
+    if (!(cs_list.empty())) {
+        ofstream cs_save;
+        cs_save.open("cs_list.txt");
+        if (cs_save.is_open())
+        {
+            for (size_t i = 0; i < cs_list.size(); i++) {
+                cs_save << cs_list[i].name << "|" << cs_list[i].k_cex << "|" << cs_list[i].k_cex_in_work << "|" << cs_list[i].type << "|" << endl;
+            };
+        };
+        cs_save.close();
+    }
+    else {
+        cout << "\nCS empty\n";
+    };
+};
+
+void Upload(vector<Pipe>& pipes, vector<CS>& cs_list)
+{
+    pipes.clear();
+    cs_list.clear();
+
+    string line;
+    ifstream pipes_upload("pipes.txt");
+    if (pipes_upload.is_open()) {
+        while (getline(pipes_upload, line)) {
+
+            if (line.empty() || line.find_first_not_of(' ') == string::npos) {
+                continue;
+            };
+
+            vector<size_t> pos = { 0 };
+            for (size_t i = 0; i < 4; i++) {
+                size_t found_pos = line.find('|', pos[i]);
+                pos.push_back(found_pos + 1);
+            };
+
+            vector<string> sub;
+            for (int i = 0; i < (pos.size() - 1); i++) {
+                string found_sub = line.substr(pos[i], pos[i + 1] - pos[i] - 1);
+                sub.push_back(found_sub);
+            };
+
+            Pipe newPipe;
+            newPipe.name = sub[0];
+            newPipe.length = stof(sub[1]);
+            newPipe.diametr = stoi(sub[2]);
+            if (stoi(sub[3]) == 1) {
+                newPipe.repair = true;
+            }
+            else {
+                newPipe.repair = false;
+            };
+
+            pipes.push_back(newPipe);
+        };
+        pipes_upload.close();
+    };
+
+    ifstream cs_upload("cs_list.txt");
+    if (cs_upload.is_open()) {
+        while (getline(cs_upload, line)) {
+
+            if (line.empty() || line.find_first_not_of(' ') == string::npos) {
+                continue;
+            };
+
+            vector<size_t> pos = { 0 };
+            for (size_t i = 0; i < 4; i++) {
+                size_t found_pos = line.find('|', pos[i]);
+                pos.push_back(found_pos + 1);
+            };
+
+            vector<string> sub;
+            for (int i = 0; i < (pos.size() - 1); i++) {
+                string found_sub = line.substr(pos[i], pos[i + 1] - pos[i] - 1);
+                sub.push_back(found_sub);
+            };
+
+            CS newCS;
+            newCS.name = sub[0];
+            newCS.k_cex = stoi(sub[1]);
+            newCS.k_cex_in_work = stoi(sub[2]);
+            newCS.type = sub[3];
+
+            cs_list.push_back(newCS);
+        };
+        cs_upload.close();
+    };
 };
 
 void Menu(vector<Pipe>& pipes, vector<CS>& cs_list)
@@ -245,6 +352,12 @@ void Menu(vector<Pipe>& pipes, vector<CS>& cs_list)
             break;
         case 5:
             EditCS(cs_list);
+            break;
+        case 6:
+            Save(pipes, cs_list);
+            break;
+        case 7:
+            Upload(pipes, cs_list);
             break;
         case 0:
             cout << "Exiting...\n";
