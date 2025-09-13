@@ -114,7 +114,7 @@ void ViewAllObjects(const vector<Pipe>& pipes, const vector<CS>& cs_list)
     };
 
     if (cs_list.empty()) {
-        cout << "CS empty\n";
+        cout << "CS empty\n\n";
     }
     else {
 
@@ -126,7 +126,7 @@ void ViewAllObjects(const vector<Pipe>& pipes, const vector<CS>& cs_list)
             cout << "workshop: " << cs_list[i].k_cex << endl;
             cout << "workshop in work: " << cs_list[i].k_cex_in_work << endl;
             cout << "type: " << cs_list[i].type << endl;
-            cout << "--------------------------------------\n";
+            cout << "--------------------------------------\n\n";
         };
     };
 };
@@ -134,7 +134,7 @@ void ViewAllObjects(const vector<Pipe>& pipes, const vector<CS>& cs_list)
 void EditPipe(vector<Pipe>& pipes)
 {   
     if (pipes.empty()) {
-        cout << "\nPipes empty\n";
+        cout << "\nPipes empty\n\n";
         return;
     }
 
@@ -147,15 +147,17 @@ void EditPipe(vector<Pipe>& pipes)
     };
 
     string status;
-    cout << "Is the pipe being repaired?(Yes/No): ";
+    cout << "\nIs the pipe being repaired?(Yes/No): ";
     while (true) {
         cin >> status;
         if (status == "Yes") {
             pipes[i - 1].repair = true;
+            cout << "Status change in true\n\n";
             break;
         }
         else if (status == "No") {
             pipes[i - 1].repair = false;
+            cout << "Status change in false\n\n";
             break;
         }
         else {
@@ -167,7 +169,7 @@ void EditPipe(vector<Pipe>& pipes)
 void EditCS(vector<CS>& cs_list)
 {
     if (cs_list.empty()) {
-        cout << "\nCS empty\n";
+        cout << "\nCS empty\n\n";
         return;
     };
 
@@ -180,9 +182,11 @@ void EditCS(vector<CS>& cs_list)
     };
 
     while (1) {
+        cout << "\n--------------------------------------\n";
         cout << "CS " << i << endl;
         cout << "works: " << cs_list[i - 1].k_cex_in_work << "/" << cs_list[i - 1].k_cex << endl;
         cout << "\nChoose option:\n1. Run workshop +1\n2. Stop workshop -1\n3. Exit\n";
+        cout << "--------------------------------------\n\n";
         int option;
 
         while (!(cin >> option)) {
@@ -198,7 +202,7 @@ void EditCS(vector<CS>& cs_list)
                 cs_list[i - 1].k_cex_in_work++;
             }
             else {
-                cout << "The number of workshop workers cannot be greater than the total number of workshops.\n";
+                cout << "\nThe number of workshop workers cannot be greater than the total number of workshops.\n";
             };
             break;
         case 2:
@@ -206,10 +210,11 @@ void EditCS(vector<CS>& cs_list)
                 cs_list[i - 1].k_cex_in_work--;
             }
             else {
-                cout << "The number of workshop workers cannot be less than zero.\n";
+                cout << "\nThe number of workshop workers cannot be less than zero.\n";
             };
             break;
         case 3:
+            cout << "\nExiting...\n\n";
             return;
         default:
             cout << "Invalid option! Try again.\n";
@@ -228,6 +233,7 @@ void Save(const vector<Pipe>& pipes, const vector<CS>& cs_list)
             for (size_t i = 0; i < pipes.size(); i++) {
                 pipes_save << pipes[i].name << "|" << pipes[i].length << "|" << pipes[i].diametr << "|" << pipes[i].repair << "|" << endl;
             };
+            cout << "\nPipes are saved!\n";
         };
         pipes_save.close();
     }
@@ -244,10 +250,11 @@ void Save(const vector<Pipe>& pipes, const vector<CS>& cs_list)
                 cs_save << cs_list[i].name << "|" << cs_list[i].k_cex << "|" << cs_list[i].k_cex_in_work << "|" << cs_list[i].type << "|" << endl;
             };
         };
+        cout << "CS are saved!\n\n";
         cs_save.close();
     }
     else {
-        cout << "\nCS empty\n";
+        cout << "CS empty\n\n";
     };
 };
 
@@ -290,6 +297,11 @@ void Upload(vector<Pipe>& pipes, vector<CS>& cs_list)
 
             pipes.push_back(newPipe);
         };
+        cout << "\nPipes are uploaded!\n";
+        pipes_upload.close();
+    }
+    else {
+        cout << "\nFile 'pipes.txt' not found\n";
         pipes_upload.close();
     };
 
@@ -321,6 +333,11 @@ void Upload(vector<Pipe>& pipes, vector<CS>& cs_list)
 
             cs_list.push_back(newCS);
         };
+        cout << "CS are uploaded!\n\n";
+        cs_upload.close();
+    }
+    else {
+        cout << "File 'cs_list.txt' not found\n\n";
         cs_upload.close();
     };
 };
@@ -328,7 +345,9 @@ void Upload(vector<Pipe>& pipes, vector<CS>& cs_list)
 void Menu(vector<Pipe>& pipes, vector<CS>& cs_list)
 {
     while (1) {
-        cout << "\nChoose option:\n1. Add Pipe\n2. Add CS\n3. View all objects\n4. Edit pipe\n5. Edit CS\n6. Save\n7. Upload\n0. Exit\n";
+        cout << "--------------------------------------\n";
+        cout << "Choose option:\n1. Add Pipe\n2. Add CS\n3. View all objects\n4. Edit pipe\n5. Edit CS\n6. Save\n7. Upload\n0. Exit\n";
+        cout << "--------------------------------------\n\n";
         int option;
 
         while (!(cin >> option)) {
@@ -360,7 +379,7 @@ void Menu(vector<Pipe>& pipes, vector<CS>& cs_list)
             Upload(pipes, cs_list);
             break;
         case 0:
-            cout << "Exiting...\n";
+            cout << "\nExiting...\n";
             return;
         default:
             cout << "Invalid option! Try again.\n";
