@@ -22,25 +22,41 @@ struct CS
     string type;
 };
 
-void AddPipe(vector<Pipe>& pipes)
+int ProverkaInt()
 {
-    Pipe newPipe;
-    cout << "\nВведите название трубы: ";
-    cin >> newPipe.name;
+    int value;
+    while (!(cin >> value) || value <= 0) {
+        cout << "Ошибка! Введите ПОЛОЖИТЕЛЬНОЕ ЦЕЛОЕ ЧИСЛО: ";
+        cin.clear();
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    };
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    return value;
+};
 
-    cout << "Введите длину трубы (км): ";
-    while (!(cin >> newPipe.length) || newPipe.length <= 0) {
+float ProverkaFloat()
+{
+    float value;
+    while (!(cin >> value) || value <= 0) {
         cout << "Ошибка! Введите ПОЛОЖИТЕЛЬНОЕ ЧИСЛО: ";
         cin.clear();
         cin.ignore(numeric_limits<streamsize>::max(), '\n');
     };
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    return value;
+};
+
+void AddPipe(vector<Pipe>& pipes)
+{
+    Pipe newPipe;
+    cout << "\nВведите название трубы: ";
+    getline(cin, newPipe.name);
+
+    cout << "Введите длину трубы (км): ";
+    newPipe.length = ProverkaFloat();
 
     cout << "Введите диаметр трубы (мм): ";
-    while (!(cin >> newPipe.diametr) || newPipe.diametr <= 0) {
-        cout << "Ошибка! Введите ЦЕЛОЕ ПОЛОЖИТЕЛЬНОЕ ЧИСЛО: ";
-        cin.clear();
-        cin.ignore(numeric_limits<streamsize>::max(), '\n');
-    };
+    newPipe.diametr = ProverkaInt();
     
     string status;
     cout << "Труба на ремонте?(Yes/No): ";
@@ -67,20 +83,16 @@ void AddCS(vector<CS>& cs_list)
 {
     CS newCS;
     cout << "\nВведите название КС: ";
-    cin >> newCS.name;
+    getline(cin, newCS.name);
 
     cout << "Введите общее количество цехов: ";
-    while (!(cin >> newCS.k_cex) || newCS.k_cex <= 0) {
-        cout << "Ошибка! Введите ЦЕЛОЕ ПОЛОЖИТЕЛЬНОЕ ЧИСЛО: ";
-        cin.clear();
-        cin.ignore(numeric_limits<streamsize>::max(), '\n');
-    };
+    newCS.k_cex = ProverkaInt();
 
     cout << "Введите количество цехов в работе: ";
-    while (!(cin >> newCS.k_cex_in_work) || newCS.k_cex_in_work < 0 || newCS.k_cex_in_work > newCS.k_cex) {
-        cout << "Ошибка! Введите ЦЕЛОЕ ПОЛОЖИТЕЛЬНОЕ ЧИСЛО и МЕНЬШЕЕ общего количества цехов: ";
-        cin.clear();
-        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    newCS.k_cex_in_work = ProverkaInt();
+    if (newCS.k_cex_in_work > newCS.k_cex) {
+        cout << "Ошибка! Количество цехов в работе не может быть больше общего количества цехов\nВведите корректное число: ";
+        newCS.k_cex_in_work = ProverkaInt();
     };
 
     cout << "Введите тип КС: ";
@@ -142,10 +154,10 @@ void EditPipe(vector<Pipe>& pipes)
 
     int i;
     cout << "\nВведите номер трубы: ";
-    while (!(cin >> i) || i <= 0 ||  i > pipes.size()) {
-        cout << "Ошибка! Введите ЦЕЛОЕ ПОЛОЖИТЕЛЬНОЕ ЧИСЛО не превышающее общего количества труб: ";
-        cin.clear();
-        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    i = ProverkaInt();
+    if (i > pipes.size()) {
+        cout << "Ошибка! Введите число не превышающее общего количества труб: ";
+        i = ProverkaInt();
     };
 
     string status;
@@ -177,10 +189,10 @@ void EditCS(vector<CS>& cs_list)
 
     int i;
     cout << "\nВведите номер КС: ";
-    while (!(cin >> i) || i <= 0 || i > cs_list.size()) {
-        cout << "Ошибка! Введите ЦЕЛОЕ ПОЛОЖИТЕЛЬНОЕ ЧИСЛО не превышающее общего количества КС: ";
-        cin.clear();
-        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    i = ProverkaInt();
+    if (i > cs_list.size()) {
+        cout << "Ошибка! Введите число не превышающее общего количества КС: ";
+        i = ProverkaInt();
     };
 
     while (1) {
@@ -190,12 +202,7 @@ void EditCS(vector<CS>& cs_list)
         cout << "\nВыберите опцию:\n1. Запустить цех (+1)\n2. Остановить цех (-1)\n3. Выход\n";
         cout << "--------------------------------------\n\n";
         int option;
-
-        while (!(cin >> option)) {
-            cout << "Ошибка! Введите ЦЕЛОЕ число: ";
-            cin.clear();
-            cin.ignore(numeric_limits<streamsize>::max(), '\n');
-        };
+        option = ProverkaInt();
 
         switch (option)
         {
@@ -281,7 +288,7 @@ void Upload(vector<Pipe>& pipes, vector<CS>& cs_list)
             };
 
             vector<string> sub;
-            for (int i = 0; i < (pos.size() - 1); i++) {
+            for (size_t i = 0; i < (pos.size() - 1); i++) {
                 string found_sub = line.substr(pos[i], pos[i + 1] - pos[i] - 1);
                 sub.push_back(found_sub);
             };
@@ -322,7 +329,7 @@ void Upload(vector<Pipe>& pipes, vector<CS>& cs_list)
             };
 
             vector<string> sub;
-            for (int i = 0; i < (pos.size() - 1); i++) {
+            for (size_t i = 0; i < (pos.size() - 1); i++) {
                 string found_sub = line.substr(pos[i], pos[i + 1] - pos[i] - 1);
                 sub.push_back(found_sub);
             };
@@ -348,15 +355,11 @@ void Menu(vector<Pipe>& pipes, vector<CS>& cs_list)
 {
     while (1) {
         cout << "--------------------------------------\n";
-        cout << "Выберите опцию:\n1. Добавить трубу\n2. Добавить КС\n3. Просмотр всех объектов\n4. Редактировать трубу\n5. Редактировать КС\n6. Сохранить\n7. Загрузить\n0. Выход\n";
+        cout << "Выберите опцию:\n1. Добавить трубу\n2. Добавить КС\n3. Просмотр всех объектов\n4. Редактировать трубу\n5. Редактировать КС\n6. Сохранить\n7. Загрузить\n8. Выход\n";
         cout << "--------------------------------------\n\n";
         int option;
+        option = ProverkaInt();
 
-        while (!(cin >> option)) {
-            cout << "Ошибка. Введите ЦЕЛОЕ число: ";
-            cin.clear();
-            cin.ignore(numeric_limits<streamsize>::max(), '\n');
-        };
         switch (option)
         {
         case 1:
@@ -380,7 +383,7 @@ void Menu(vector<Pipe>& pipes, vector<CS>& cs_list)
         case 7:
             Upload(pipes, cs_list);
             break;
-        case 0:
+        case 8:
             cout << "\nВыходим...\n";
             return;
         default:
