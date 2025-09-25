@@ -96,7 +96,7 @@ void AddCS(vector<CS>& cs_list)
     };
 
     cout << "Введите тип КС: ";
-    cin >> newCS.type;
+    getline(cin, newCS.type);
 
     cs_list.push_back(newCS);
     cout << "\nНовая КС добавлена\n\n";
@@ -155,7 +155,7 @@ void EditPipe(vector<Pipe>& pipes)
     int i;
     cout << "\nВведите номер трубы: ";
     i = ProverkaInt();
-    if (i > pipes.size()) {
+    while (i > pipes.size()) {
         cout << "Ошибка! Введите число не превышающее общего количества труб: ";
         i = ProverkaInt();
     };
@@ -190,7 +190,7 @@ void EditCS(vector<CS>& cs_list)
     int i;
     cout << "\nВведите номер КС: ";
     i = ProverkaInt();
-    if (i > cs_list.size()) {
+    while (i > cs_list.size()) {
         cout << "Ошибка! Введите число не превышающее общего количества КС: ";
         i = ProverkaInt();
     };
@@ -234,36 +234,32 @@ void EditCS(vector<CS>& cs_list)
 
 void Save(const vector<Pipe>& pipes, const vector<CS>& cs_list)
 {
-    if (!(pipes.empty())) {
-        ofstream pipes_save;
-        pipes_save.open("pipes.txt");
-        if (pipes_save.is_open())
-        {
+    ofstream save;
+    save.open("save.txt");
+    if (save.is_open()) {
+        if (!(pipes.empty())) {
+            save << "ТРУБЫ\n";
             for (size_t i = 0; i < pipes.size(); i++) {
-                pipes_save << pipes[i].name << "|" << pipes[i].length << "|" << pipes[i].diametr << "|" << pipes[i].repair << "|" << endl;
+                save << pipes[i].name << "|" << pipes[i].length << "|" << pipes[i].diametr << "|" << pipes[i].repair << "|" << endl;
             };
             cout << "\nСписок труб сохранен!\n";
+        }
+        else {
+            save << "ТРУБ НЕТ\n";
+            cout << "\nТРУБ НЕТ\n";
         };
-        pipes_save.close();
-    }
-    else {
-        cout << "\nТРУБ НЕТ\n";
-    };
 
-    if (!(cs_list.empty())) {
-        ofstream cs_save;
-        cs_save.open("cs_list.txt");
-        if (cs_save.is_open())
-        {
+        if (!(cs_list.empty())) {
+            save << "КС\n";
             for (size_t i = 0; i < cs_list.size(); i++) {
-                cs_save << cs_list[i].name << "|" << cs_list[i].k_cex << "|" << cs_list[i].k_cex_in_work << "|" << cs_list[i].type << "|" << endl;
+                save << cs_list[i].name << "|" << cs_list[i].k_cex << "|" << cs_list[i].k_cex_in_work << "|" << cs_list[i].type << "|" << endl;
             };
+            cout << "Список КС сохранен!\n\n";
+        }
+        else {
+            save << "КС НЕТ";
+            cout << "КС НЕТ\n\n";
         };
-        cout << "Список КС сохранен!\n\n";
-        cs_save.close();
-    }
-    else {
-        cout << "КС НЕТ\n\n";
     };
 };
 
@@ -273,26 +269,52 @@ void Upload(vector<Pipe>& pipes, vector<CS>& cs_list)
     cs_list.clear();
 
     string line;
-    ifstream pipes_upload("pipes.txt");
-    if (pipes_upload.is_open()) {
-        while (getline(pipes_upload, line)) {
+    string state = "None";
+    ifstream upload("save.txt");
 
-            if (line.empty() || line.find_first_not_of(' ') == string::npos) {
-                continue;
-            };
+    if (!(upload.is_open())) {
+        cout << "\nФайл 'save.txt' не найден\n";
+        upload.close();
+        return;
+    };
 
-            vector<size_t> pos = { 0 };
-            for (size_t i = 0; i < 4; i++) {
-                size_t found_pos = line.find('|', pos[i]);
-                pos.push_back(found_pos + 1);
-            };
+    while (getline(upload, line)) {
 
-            vector<string> sub;
-            for (size_t i = 0; i < (pos.size() - 1); i++) {
-                string found_sub = line.substr(pos[i], pos[i + 1] - pos[i] - 1);
-                sub.push_back(found_sub);
-            };
+        if (line.empty() || line.find_first_not_of(' ') == string::npos) {
+            continue;
+        };
 
+        if ("ТРУБ НЕТ" == line) {
+            cout << "\nТРУБ НЕТ\n";
+            continue;
+        } 
+        else if ("ТРУБЫ" == line) {
+            state = "Trubs";
+            continue;
+        };
+
+        if ("КС НЕТ" == line) {
+            cout << "КС НЕТ\n\n";
+            continue;
+        }
+        else if ("КС" == line) {
+            state = "CS";
+            continue;
+        };
+
+        vector<size_t> pos = { 0 };
+        for (size_t i = 0; i < 4; i++) {
+            size_t found_pos = line.find('|', pos[i]);
+            pos.push_back(found_pos + 1);
+        };
+
+        vector<string> sub;
+        for (size_t i = 0; i < (pos.size() - 1); i++) {
+            string found_sub = line.substr(pos[i], pos[i + 1] - pos[i] - 1);
+            sub.push_back(found_sub);
+        };
+
+        if (state == "Trubs") {
             Pipe newPipe;
             newPipe.name = sub[0];
             newPipe.length = stof(sub[1]);
@@ -306,34 +328,8 @@ void Upload(vector<Pipe>& pipes, vector<CS>& cs_list)
 
             pipes.push_back(newPipe);
         };
-        cout << "\nСписок труб загружен!\n";
-        pipes_upload.close();
-    }
-    else {
-        cout << "\nФайл 'pipes.txt' не найден\n";
-        pipes_upload.close();
-    };
 
-    ifstream cs_upload("cs_list.txt");
-    if (cs_upload.is_open()) {
-        while (getline(cs_upload, line)) {
-
-            if (line.empty() || line.find_first_not_of(' ') == string::npos) {
-                continue;
-            };
-
-            vector<size_t> pos = { 0 };
-            for (size_t i = 0; i < 4; i++) {
-                size_t found_pos = line.find('|', pos[i]);
-                pos.push_back(found_pos + 1);
-            };
-
-            vector<string> sub;
-            for (size_t i = 0; i < (pos.size() - 1); i++) {
-                string found_sub = line.substr(pos[i], pos[i + 1] - pos[i] - 1);
-                sub.push_back(found_sub);
-            };
-
+        if (state == "CS") {
             CS newCS;
             newCS.name = sub[0];
             newCS.k_cex = stoi(sub[1]);
@@ -342,13 +338,8 @@ void Upload(vector<Pipe>& pipes, vector<CS>& cs_list)
 
             cs_list.push_back(newCS);
         };
-        cout << "Список КС загружен!\n\n";
-        cs_upload.close();
-    }
-    else {
-        cout << "Файл 'cs_list.txt' не найден\n\n";
-        cs_upload.close();
     };
+    upload.close();
 };
 
 void Menu(vector<Pipe>& pipes, vector<CS>& cs_list)
